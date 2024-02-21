@@ -1,0 +1,2 @@
+(()=>{"use strict";chrome.runtime.onMessage.addListener(((e,s,t)=>{"FIND_ENTITIES"===e.type&&(console.log(`Received message to find entities with method: ${e.payload.findMethod} and query: ${e.payload.queryValue}`),t({message:"Received message to find entities"}))}))})();
+//# sourceMappingURL=background.js.map

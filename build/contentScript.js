@@ -1,0 +1,2 @@
+(()=>{"use strict";chrome.runtime.onMessage.addListener(((e,t,n)=>(window.dispatchEvent(new CustomEvent(e.type,{detail:e.payload})),window.addEventListener(e.type+"_RESULT",(function(e){n(e.detail)})),!0)))})();
+//# sourceMappingURL=contentScript.js.map
