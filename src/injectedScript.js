@@ -7,6 +7,25 @@ const componentDeleteAttributes = [
     }
 ]
 
+let defaultEntity;
+
+function getDefaultEntity() {
+    if (!defaultEntity) {
+        defaultEntity = editor.entities.create();
+        defaultEntity.addComponent("model");
+        defaultEntity.addComponent("render");
+        defaultEntity.addComponent("collision");
+        defaultEntity.addComponent("rigidbody");
+        defaultEntity.addComponent("animation");
+        defaultEntity.addComponent("camera");
+        defaultEntity.addComponent("light");
+        defaultEntity.addComponent("element");
+        defaultEntity.addComponent("particlesystem");
+        defaultEntity = defaultEntity.json();
+    }
+    return defaultEntity;
+}
+
 window.addEventListener("FIND_ENTITY", function (e) {
     let method = e.detail.method;
     let value = e.detail.value;
@@ -30,7 +49,6 @@ window.addEventListener("FIND_ENTITY", function (e) {
 window.addEventListener("EXPORT_ENTITIES", function (e) {
     let exportType = e.detail.exportType;
     let downloadFile = e.detail.downloadFile;
-    console.log(exportType, downloadFile);
     exportObjects(exportType === "hierarchy", downloadFile);
 });
 
@@ -145,8 +163,6 @@ function writeToClipboard(text) {
 }
 
 function cleanEntity(entity) {
-    delete entity.parent;
-    delete entity.resource_id;
 
     let uneabledComponents = [];
     for (let componentName in entity.components) {
@@ -188,6 +204,47 @@ function cleanEntity(entity) {
     }
     if(entity.template_ent_ids) {
         delete entity.template_ent_ids;
+    }
+    if(entity.tags && entity.tags.length === 0) {
+        delete entity.tags;
+    }
+    if(entity.children && entity.children.length === 0) {
+        delete entity.children;
+    }
+    if(entity.hasOwnProperty("enabled") && entity.enabled) {
+        delete entity.enabled;
+    }
+
+    if(entity.position[0] === 0 && entity.position[1] === 0 && entity.position[2] === 0) {
+        delete entity.postion;
+    }
+    if(entity.rotation[0] === 0 && entity.rotation[1] === 0 && entity.rotation[2] === 0) {
+        delete entity.rotation;
+    }
+    if(entity.scale[0] === 1 && entity.scale[1] === 1 && entity.scale[2] === 1) {
+        delete entity.scale;
+    }
+    if(entity.components && Object.keys(entity.components).length === 0) {
+        delete entity.components;
+    }
+
+    delete entity.parent;
+    delete entity.resource_id;
+
+    if(entity.position) {
+        entity.position[0] = parseFloat(entity.position[0].toFixed(4));
+        entity.position[1] = parseFloat(entity.position[1].toFixed(4));
+        entity.position[2] = parseFloat(entity.position[2].toFixed(4));
+    }
+    if(entity.rotation) {
+        entity.rotation[0] = parseFloat(entity.rotation[0].toFixed(4));
+        entity.rotation[1] = parseFloat(entity.rotation[1].toFixed(4));
+        entity.rotation[2] = parseFloat(entity.rotation[2].toFixed(4));
+    }
+    if(entity.scale) {
+        entity.scale[0] = parseFloat(entity.scale[0].toFixed(4));
+        entity.scale[1] = parseFloat(entity.scale[1].toFixed(4));
+        entity.scale[2] = parseFloat(entity.scale[2].toFixed(4));
     }
 
     if (entity.children) {
@@ -277,6 +334,15 @@ function isEntityId(id) {
 }
 
 function cleanComponent(name, component) {
+    if(name !== "script") {
+        for (let key in component) {
+            if (component.hasOwnProperty(key)) {
+                if(getDefaultEntity().components[name][key] === component[key]) {
+                    delete component[key];
+                }
+            }
+        }
+    }
     componentDeleteAttributes.forEach((c) => {
         if (c.component === name) {
             c.attributes.forEach((attribute) => {

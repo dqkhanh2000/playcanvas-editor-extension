@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Playcanvas Extension",
   "$schema": "https://json.schemastore.org/chrome-manifest.json",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Playcanvas exporter extension",
   "icons": {
     "128": "icons/icon-128.png"
